@@ -1,0 +1,7 @@
+.venv
+.git
+Challenge/Groups/grupo1/*
+Challenge/Groups/grupo2/*
+Challenge/Groups/grupo3/*
+Challenge/y_true.csv
+__pycache__/
