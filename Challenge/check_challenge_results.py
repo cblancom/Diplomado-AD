@@ -4,7 +4,19 @@ from sklearn.metrics import f1_score
 
 
 class CheckChallengeResults:
+    """
+    Class for evaluating multiple predictions against a test dataset.
+
+    This class iterates through different subfolders in a specified directory and searches for two files: 'y_pred1.csv' and 'y_pred2.csv' within each subfolder. These files contain predictions based on a dataset. The class then calculates the F1 score for each prediction and stores the results in a dictionary.
+    """
+
     def __init__(self, groups_path, true_results_path):
+        """
+        Initialization of the variables to be used. The necessary functions are called in the appropriate order.
+
+        :param groups_path str: Directory where the folders will be searched.
+        :param true_results_path str: Path where the actual results are found.
+        """
         self.groups_path = groups_path
         self.true_results_path = true_results_path
 
@@ -14,10 +26,12 @@ class CheckChallengeResults:
     def get_files(
         self,
     ):
+        """
+        This function iterates through the folders and determines which ones contain both valid files, which ones have only one file, and which ones contain none.
+        """
         self.csv_dict = {}
         for folder_name in os.listdir(self.groups_path):
             folder_path = os.path.join(self.groups_path, folder_name)
-            # print(folder_path)
 
             if os.path.isdir(folder_path):
                 # Initialize a list to store the CSV data
@@ -27,12 +41,14 @@ class CheckChallengeResults:
                     if os.path.isfile(file_path):
                         # Read the CSV file and store it in the dictionary
                         csv_files[csv_file] = pd.read_csv(file_path)
-                    # if csv_files:
                     self.csv_dict[folder_name] = csv_files
 
     def get_F1_scores(
         self,
     ):
+        """
+        This function iterates through the files with the correct names (determined in the previous method), calls another method to compute the F1 scores, and sorts the results.
+        """
         self.results_dict = {}
         # Load and reorder y_test.csv with respect to the 'code' column
         y_test = pd.read_csv(self.true_results_path)
@@ -61,17 +77,25 @@ class CheckChallengeResults:
             self.results_dict[group_results_names] = f1_scores
 
     def compute_f1(self, y_true, y_pred):
-        label_mapping = {"si": 1, "no": 0}
-        y_true = y_true.sort_values(by="codigo_cliente").reset_index(drop=True)
-        y_pred = y_pred.sort_values(by="codigo_cliente").reset_index(drop=True)
+        """
+                Additional method used to calculate the F1 score.
 
-        if y_true["codigo_cliente"].equals(y_pred["codigo_cliente"]):
-            try:
+        At this stage, we validate that both the predictions and the actual data have the same IDs. If the IDs match, we calculate the F1 score and return the value to the previous method. If the IDs do not match, an appropriate message is returned.
+
+                :param y_true pd.DataFrame: Dataframe with true data
+                :param y_pred pd.DataFrame: Dataframe with predicted data
+        """
+        label_mapping = {"si": 1, "no": 0}
+        try:
+            y_true = y_true.sort_values(by="codigo_cliente").reset_index(drop=True)
+            y_pred = y_pred.sort_values(by="codigo_cliente").reset_index(drop=True)
+            if y_true["codigo_cliente"].equals(y_pred["codigo_cliente"]):
                 y_true_map = y_true["resultado"].map(label_mapping)
                 y_pred_map = y_pred["resultado"].map(label_mapping)
                 f1_score_result = f1_score(y_true_map, y_pred_map)
-            except:
-                f1_score_result = "El archivo no tiene el formato adecuado"
-        else:
-            f1_score_result = "El archivo no tiene el formato adecuado"
+            else:
+                f1_score_result = "Los clientes son diferentes"
+
+        except Exception as error:
+            f1_score_result = str(error)
         return f1_score_result
