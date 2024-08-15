@@ -92,7 +92,7 @@ class CheckChallengeResults:
             if y_true["codigo_cliente"].equals(y_pred["codigo_cliente"]):
                 y_true_map = y_true["resultado"].map(label_mapping)
                 y_pred_map = y_pred["resultado"].map(label_mapping)
-                f1_score_result = f1_score(y_true_map, y_pred_map)
+                f1_score_result = f1_score(y_true_map, y_pred_map, average="weighted")
             else:
                 f1_score_result = "Los clientes son diferentes"
 
