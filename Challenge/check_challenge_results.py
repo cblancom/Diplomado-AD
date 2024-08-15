@@ -78,12 +78,12 @@ class CheckChallengeResults:
 
     def compute_f1(self, y_true, y_pred):
         """
-                Additional method used to calculate the F1 score.
+        Additional method used to calculate the F1 score.
 
         At this stage, we validate that both the predictions and the actual data have the same IDs. If the IDs match, we calculate the F1 score and return the value to the previous method. If the IDs do not match, an appropriate message is returned.
 
-                :param y_true pd.DataFrame: Dataframe with true data
-                :param y_pred pd.DataFrame: Dataframe with predicted data
+        :param y_true pd.DataFrame: Dataframe with true data
+        :param y_pred pd.DataFrame: Dataframe with predicted data
         """
         label_mapping = {"si": 1, "no": 0}
         try:
